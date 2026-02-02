@@ -6,14 +6,33 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>📊 Trade Journal Dashboard</h1>
-  <div class="stats">
-    <div>Total Trades: <span id="totalTrades">0</span></div>
-    <div>Wins: <span id="wins">0</span></div>
-    <div>Losses: <span id="losses">0</span></div>
-    <div>Win Rate: <span id="winRate">0%</span></div>
+  <div class="container">
+    <h1>📊 Trade Journal Dashboard</h1>
+
+    <div class="stats-grid">
+      <div class="card">
+        <h3>Total Trades</h3>
+        <p id="totalTrades">0</p>
+      </div>
+      <div class="card win">
+        <h3>Wins</h3>
+        <p id="wins">0</p>
+      </div>
+      <div class="card loss">
+        <h3>Losses</h3>
+        <p id="losses">0</p>
+      </div>
+      <div class="card">
+        <h3>Win Rate</h3>
+        <p id="winRate">0%</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="journal.html">➕ Add New Trade</a>
+    </div>
   </div>
-  <a href="journal.html">➕ Add New Trade</a>
+
   <script src="script.js"></script>
 </body>
 </html>
