@@ -1,3 +1,4 @@
+// LOAD TRADES
 let trades = JSON.parse(localStorage.getItem('trades')) || [];
 
 function saveTrades() {
@@ -7,19 +8,20 @@ function saveTrades() {
 // ADD / EDIT TRADE
 const form = document.getElementById('tradeForm');
 if (form) {
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
 
     const trade = {
-      market: market.value,
-      date: date.value,
-      pair: pair.value,
-      result: result.value,
-      pl: result.value === 'win' ? 100 : -50,
-      notes: notes.value
+      market: document.getElementById('market').value,
+      date: document.getElementById('date').value,
+      pair: document.getElementById('pair').value,
+      result: document.getElementById('result').value,
+      pl: document.getElementById('result').value === 'win' ? 100 : -50,
+      notes: document.getElementById('notes').value
     };
 
     const editIndex = document.getElementById('editIndex').value;
+
     if (editIndex === '') {
       trades.push(trade);
     } else {
@@ -31,24 +33,23 @@ if (form) {
   });
 }
 
-// LOAD DASHBOARD
+// DASHBOARD STATS
 function loadStats() {
   if (!document.getElementById('totalTrades')) return;
 
   const total = trades.length;
-  const wins = trades.filter(t => t.result === 'win').length;
-  const losses = trades.filter(t => t.result === 'loss').length;
-  const monthlyPL = trades.reduce((a,b)=>a+b.pl,0);
+  const winsCount = trades.filter(t => t.result === 'win').length;
+  const lossesCount = trades.filter(t => t.result === 'loss').length;
 
-  totalTrades.innerText = total;
-  wins.innerText = wins;
-  losses.innerText = losses;
-  winRate.innerText = total ? Math.round((wins/total)*100)+'%' : '0%';
-  monthlyPL.innerText = monthlyPL;
+  document.getElementById('totalTrades').innerText = total;
+  document.getElementById('wins').innerText = winsCount;
+  document.getElementById('losses').innerText = lossesCount;
+  document.getElementById('winRate').innerText = total ? Math.round((winsCount / total) * 100) + '%' : '0%';
 
   renderTable();
 }
 
+// TABLE RENDER
 function renderTable() {
   const tbody = document.querySelector('#tradeTable tbody');
   tbody.innerHTML = '';
@@ -70,6 +71,7 @@ function renderTable() {
   });
 }
 
+// DELETE
 function deleteTrade(index) {
   if (confirm('Delete this trade?')) {
     trades.splice(index, 1);
@@ -78,22 +80,23 @@ function deleteTrade(index) {
   }
 }
 
+// EDIT
 function editTrade(index) {
-  const t = trades[index];
-  localStorage.setItem('editTrade', JSON.stringify({ ...t, index }));
+  localStorage.setItem('editTrade', JSON.stringify({ ...trades[index], index }));
   window.location.href = 'journal.html';
 }
 
 // LOAD EDIT DATA
 const editData = JSON.parse(localStorage.getItem('editTrade'));
 if (editData && form) {
-  market.value = editData.market;
-  date.value = editData.date;
-  pair.value = editData.pair;
-  result.value = editData.result;
-  notes.value = editData.notes;
-  editIndex.value = editData.index;
+  document.getElementById('market').value = editData.market;
+  document.getElementById('date').value = editData.date;
+  document.getElementById('pair').value = editData.pair;
+  document.getElementById('result').value = editData.result;
+  document.getElementById('notes').value = editData.notes;
+  document.getElementById('editIndex').value = editData.index;
   localStorage.removeItem('editTrade');
 }
 
+// INIT
 if (document.getElementById('totalTrades')) loadStats();
