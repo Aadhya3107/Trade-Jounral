@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Trade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>➕ Add Trade</h1>
+  <form id="tradeForm">
+    <input type="date" id="date" required>
+    <input type="text" id="pair" placeholder="Pair (EURUSD)" required>
+    <select id="result">
+      <option value="win">Win</option>
+      <option value="loss">Loss</option>
+    </select>
+    <textarea id="notes" placeholder="Notes"></textarea>
+    <button type="submit">Save Trade</button>
+  </form>
+  <a href="index.html">⬅ Back to Dashboard</a>
+  <script src="script.js"></script>
+</body>
+</html>
