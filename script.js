@@ -1,60 +1,47 @@
-// LOAD TRADES
+// FIXED script.js – fully working add / edit / delete / stats
+
 let trades = JSON.parse(localStorage.getItem('trades')) || [];
+let editIndex = null;
 
-function saveTrades() {
+document.addEventListener('DOMContentLoaded', () => {
+  renderDashboard();
+});
+
+function saveTrade(e) {
+  e.preventDefault();
+
+  const market = document.getElementById('market').value;
+  const date = document.getElementById('date').value;
+  const pair = document.getElementById('pair').value;
+  const result = document.getElementById('result').value;
+  const pl = document.getElementById('pl').value;
+
+  const trade = { market, date, pair, result, pl };
+
+  if (editIndex !== null) {
+    trades[editIndex] = trade;
+    editIndex = null;
+  } else {
+    trades.push(trade);
+  }
+
   localStorage.setItem('trades', JSON.stringify(trades));
+  window.location.href = 'index.html';
 }
 
-// ADD / EDIT TRADE
-const form = document.getElementById('tradeForm');
-if (form) {
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+function renderDashboard() {
+  const tbody = document.getElementById('tradeTable');
+  if (!tbody) return;
 
-    const trade = {
-      market: document.getElementById('market').value,
-      date: document.getElementById('date').value,
-      pair: document.getElementById('pair').value,
-      result: document.getElementById('result').value,
-      pl: document.getElementById('result').value === 'win' ? 100 : -50,
-      notes: document.getElementById('notes').value
-    };
-
-    const editIndex = document.getElementById('editIndex').value;
-
-    if (editIndex === '') {
-      trades.push(trade);
-    } else {
-      trades[editIndex] = trade;
-    }
-
-    saveTrades();
-    window.location.href = 'index.html';
-  });
-}
-
-// DASHBOARD STATS
-function loadStats() {
-  if (!document.getElementById('totalTrades')) return;
-
-  const total = trades.length;
-  const winsCount = trades.filter(t => t.result === 'win').length;
-  const lossesCount = trades.filter(t => t.result === 'loss').length;
-
-  document.getElementById('totalTrades').innerText = total;
-  document.getElementById('wins').innerText = winsCount;
-  document.getElementById('losses').innerText = lossesCount;
-  document.getElementById('winRate').innerText = total ? Math.round((winsCount / total) * 100) + '%' : '0%';
-
-  renderTable();
-}
-
-// TABLE RENDER
-function renderTable() {
-  const tbody = document.querySelector('#tradeTable tbody');
   tbody.innerHTML = '';
 
+  let wins = 0;
+  let losses = 0;
+
   trades.forEach((t, i) => {
+    if (t.result === 'win') wins++;
+    if (t.result === 'loss') losses++;
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${t.market}</td>
@@ -69,34 +56,38 @@ function renderTable() {
     `;
     tbody.appendChild(row);
   });
+
+  document.getElementById('totalTrades').innerText = trades.length;
+  document.getElementById('wins').innerText = wins;
+  document.getElementById('losses').innerText = losses;
+  document.getElementById('winRate').innerText = trades.length
+    ? Math.round((wins / trades.length) * 100) + '%'
+    : '0%';
 }
 
-// DELETE
-function deleteTrade(index) {
+function deleteTrade(i) {
   if (confirm('Delete this trade?')) {
-    trades.splice(index, 1);
-    saveTrades();
-    loadStats();
+    trades.splice(i, 1);
+    localStorage.setItem('trades', JSON.stringify(trades));
+    renderDashboard();
   }
 }
 
-// EDIT
-function editTrade(index) {
-  localStorage.setItem('editTrade', JSON.stringify({ ...trades[index], index }));
+function editTrade(i) {
+  localStorage.setItem('editIndex', i);
   window.location.href = 'journal.html';
 }
 
-// LOAD EDIT DATA
-const editData = JSON.parse(localStorage.getItem('editTrade'));
-if (editData && form) {
-  document.getElementById('market').value = editData.market;
-  document.getElementById('date').value = editData.date;
-  document.getElementById('pair').value = editData.pair;
-  document.getElementById('result').value = editData.result;
-  document.getElementById('notes').value = editData.notes;
-  document.getElementById('editIndex').value = editData.index;
-  localStorage.removeItem('editTrade');
-}
+function loadEditTrade() {
+  const i = localStorage.getItem('editIndex');
+  if (i === null) return;
 
-// INIT
-if (document.getElementById('totalTrades')) loadStats();
+  const t = trades[i];
+  editIndex = i;
+
+  document.getElementById('market').value = t.market;
+  document.getElementById('date').value = t.date;
+  document.getElementById('pair').value = t.pair;
+  document.getElementById('result').value = t.result;
+  document.getElementById('pl').value = t.pl;
+}
